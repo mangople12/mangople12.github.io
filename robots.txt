@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://mangople.com/sitemap.xml
+
+# 네이버 웹마스터 도구
+User-agent: Yeti
+Allow: /
+
+# 구글 검색봇
+User-agent: Googlebot
+Allow: /
+
+# 빙 검색봇
+User-agent: Bingbot
+Allow: / 
