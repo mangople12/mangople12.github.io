@@ -32,6 +32,12 @@
     <meta name="revisit-after" content="7 days">
     <link rel="canonical" href="https://mangople.com">
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./logoicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./logoicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./logoicon.png">
+    <link rel="shortcut icon" href="./logoicon.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -1131,12 +1137,16 @@
             </div>
             <div class="modal-body">
                 <div id="consultationForm">
-                    <form id="contactForm" onsubmit="submitForm(event)">
+                    <form id="contactForm" action="https://formspree.io/f/mkgzjvvb" method="POST" onsubmit="submitFormspree(event)">
+                        
                         <div class="form-group">
                             <label for="company">회사명/기관명 <span class="required">*</span></label>
                             <input type="text" id="company" name="company" required>
                             <div class="form-description">소속 기관이나 회사명을 입력해주세요</div>
                         </div>
+                        
+                        <!-- Hidden field for Formspree -->
+                        <input type="hidden" name="_subject" value="[망고플] 무료 상담 신청">
                         
                         <div class="form-group">
                             <label for="name">담당자명 <span class="required">*</span></label>
@@ -1224,8 +1234,9 @@
                     <div class="success-icon">✅</div>
                     <h4 class="success-title">상담 신청이 완료되었습니다!</h4>
                     <p class="success-text">
-                        입력하신 정보를 확인한 후 빠른 시일 내에 연락드리겠습니다.<br>
-                        추가 문의사항이 있으시면 contact@mangople.com으로 연락해주세요.
+                        상담 신청이 성공적으로 전송되었습니다!<br>
+                        contact@mangople.com으로 이메일이 발송되었습니다.<br>
+                        <small style="color: #16a34a; margin-top: 0.5rem; display: block; font-weight: 600;">✅ 빠른 시일 내에 연락드리겠습니다.</small>
                     </p>
                     <button class="btn btn-primary" onclick="closeConsultationForm()">확인</button>
                 </div>
@@ -1235,8 +1246,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <script>
-        // EmailJS 초기화
-        emailjs.init("YOUR_PUBLIC_KEY"); // 실제 사용시 EmailJS 공개키로 교체
+        // EmailJS 초기화 - 실제 키로 설정
+        emailjs.init("Gj3FeGa8CAl3vvdNL"); // EmailJS Public Key
 
         // 간단한 애니메이션과 스크롤 효과
         document.addEventListener('DOMContentLoaded', function() {
@@ -1296,8 +1307,8 @@
             document.getElementById('successMessage').style.display = 'none';
         }
 
-        // 폼 제출 처리
-        function submitForm(event) {
+        // Formspree를 통한 확실한 이메일 전송
+        function submitFormspree(event) {
             event.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
@@ -1310,11 +1321,36 @@
             submitLoading.style.display = 'inline-block';
             
             // 폼 데이터 수집
-            const formData = new FormData(document.getElementById('contactForm'));
-            const data = Object.fromEntries(formData);
+            const form = document.getElementById('contactForm');
+            const formData = new FormData(form);
             
-            // EmailJS로 이메일 전송 (실제 환경에서는 EmailJS 설정 필요)
-            sendEmailFallback(data);
+            // Formspree로 직접 전송
+            fetch('https://formspree.io/f/mkgzjvvb', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 성공 메시지 표시
+                    document.getElementById('consultationForm').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                } else {
+                    throw new Error('전송 실패');
+                }
+            })
+            .catch(error => {
+                console.error('전송 오류:', error);
+                alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            })
+            .finally(() => {
+                // 로딩 상태 해제
+                submitBtn.disabled = false;
+                submitText.style.display = 'inline';
+                submitLoading.style.display = 'none';
+            });
         }
 
         // 이메일 전송 (Fallback 방식)
@@ -1358,31 +1394,35 @@ ${data.requirements || '없음'}
             }, 1000);
         }
 
-        // EmailJS 서비스 사용시 (실제 환경에서 사용)
+        // EmailJS로 실제 이메일 전송
         function sendEmailWithEmailJS(data) {
             const templateParams = {
+                to_email: 'contact@mangople.com',
+                from_name: data.name,
+                from_email: data.email,
                 company: data.company,
-                name: data.name,
-                position: data.position,
-                email: data.email,
+                position: data.position || '미입력',
                 phone: data.phone,
                 event_type: data.event_type,
-                event_date: data.event_date,
-                participants: data.participants,
+                event_date: data.event_date || '미정',
+                participants: data.participants || '미입력',
                 languages: data.languages,
-                medical_field: data.medical_field,
-                requirements: data.requirements,
-                submission_date: new Date().toLocaleString('ko-KR')
+                medical_field: data.medical_field || '미입력',
+                requirements: data.requirements || '없음',
+                submission_date: new Date().toLocaleString('ko-KR'),
+                subject: `[망고플] 무료 상담 신청 - ${data.company}`
             };
 
-            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+            emailjs.send('service_mangople', 'template_consultation', templateParams)
                 .then(function(response) {
                     console.log('이메일 전송 성공:', response.status, response.text);
+                    // 성공 메시지 표시
                     document.getElementById('consultationForm').style.display = 'none';
                     document.getElementById('successMessage').style.display = 'block';
                 }, function(error) {
                     console.log('이메일 전송 실패:', error);
-                    alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                    // 실패 시 fallback으로 mailto 사용
+                    sendEmailFallback(data);
                 })
                 .finally(function() {
                     // 로딩 상태 해제
