@@ -1152,8 +1152,7 @@
             <div class="hero-content">
                 <div class="hero-text animate-fade-in">
                     <p style="font-size: 2rem; font-weight: 700;">
-                        실시간 통역으로 연결되는 <br>
-                        의료 지식의 미래
+                        실시간 통역으로 연결되는 의료 지식의 미래
                     </p>
                     <p>
                         단순한 ‘통역’이 아닌 ‘이해’ 중심의 서비스<br>
@@ -1163,7 +1162,7 @@
                     <div class="stats">
                         <div class="stat-item">
                             <div class="stat-number">AI</div>
-                            <div class="stat-label">의학 용어</div>
+                            <div class="stat-label">의학 통역</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-number">1초</div>
@@ -1570,7 +1569,7 @@
         </div>
     </section>
 
-   <!-- QnA Section -->
+    <!-- QnA Section -->
     <section id="qna" class="qna">
         <div class="container">
             <div class="section-header animate-fade-in">
@@ -1667,7 +1666,7 @@
             <h2>망고플과 함께 시작하세요</h2>
             <p>의료학회의 글로벌 소통을 위한 최고의 AI 통역 서비스를 경험해보세요</p>
             <div class="hero-buttons" style="justify-content: center;">
-                <button onclick="openConsultationForm()" class="btn btn-primary">무료 상담 신청</button>
+                <button onclick="openConsultationForm()" class="btn btn-primary">무료 데모 신청</button>
                 <!-- <a href="#features" class="btn btn-secondary">서비스 데모 보기</a> -->
             </div>
         </div>
@@ -1713,7 +1712,7 @@
     <div id="consultationModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">무료 상담 신청</h3>
+                <h3 class="modal-title">무료 데모 신청</h3>
                 <button class="close-btn" onclick="closeConsultationForm()">&times;</button>
             </div>
             <div class="modal-body">
@@ -1727,7 +1726,7 @@
                         </div>
                         
                         <!-- Hidden field for Formspree -->
-                        <input type="hidden" name="_subject" value="[망고플] 무료 상담 신청">
+                        <input type="hidden" name="_subject" value="[망고플] 무료 데모 신청">
                         
                         <div class="form-group">
                             <label for="name">담당자명 <span class="required">*</span></label>
@@ -1938,7 +1937,7 @@
         function sendEmailFallback(data) {
             // 이메일 본문 생성
             const emailBody = `
-망고플 무료 상담 신청
+망고플 무료 데모 신청
 
 ■ 기본 정보
 - 회사명/기관명: ${data.company}
@@ -1961,7 +1960,7 @@ ${data.requirements || '없음'}
             `.trim();
 
             // mailto 링크 생성
-            const subject = encodeURIComponent('[망고플] 무료 상담 신청 - ' + data.company);
+            const subject = encodeURIComponent('[망고플] 무료 데모 신청 - ' + data.company);
             const body = encodeURIComponent(emailBody);
             const mailtoLink = `mailto:contact@mangople.com?subject=${subject}&body=${body}`;
 
@@ -1991,7 +1990,7 @@ ${data.requirements || '없음'}
                 medical_field: data.medical_field || '미입력',
                 requirements: data.requirements || '없음',
                 submission_date: new Date().toLocaleString('ko-KR'),
-                subject: `[망고플] 무료 상담 신청 - ${data.company}`
+                subject: `[망고플] 무료 데모 신청 - ${data.company}`
             };
 
             emailjs.send('service_mangople', 'template_consultation', templateParams)
